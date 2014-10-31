@@ -4,10 +4,10 @@ from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 import time, random
 
-OAUTH_TOKEN = '###'
-OAUTH_SECRET = '###'
-CONSUMER_KEY = '###'
-CONSUMER_SECRET = '###'
+OAUTH_TOKEN         = '###'
+OAUTH_SECRET        = '###'
+CONSUMER_KEY        = '###'
+CONSUMER_SECRET     = '###'
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(OAUTH_TOKEN, OAUTH_SECRET)
@@ -21,15 +21,15 @@ class listener(StreamListener):
     def on_data(self, data):
         try:
             #CYCLE START - ACTION DICE#
-            ActionCalc = random.randint(1,95)
+            ActionCalc = random.randint(1,99999)
             Action = 0
-            if ActionCalc <= 59:
+            if ActionCalc <= 89999: #Pass 90%
                 Action = 1
-            if ActionCalc >= 60 and ActionCalc <= 74:
+            if ActionCalc >= 90000 and ActionCalc <= 94999: #5% follow
                 Action = 2
-            if ActionCalc >= 75 and ActionCalc <= 90:
+            if ActionCalc >= 95000 and ActionCalc <= 98999: #4% favorite
                 Action = 3
-            if ActionCalc >= 91 and ActionCalc <= 95:
+            if ActionCalc >= 99000 and ActionCalc <= 99999: #1% retweet
                 Action = 4
 
             #PAUSE DICE#
@@ -88,4 +88,4 @@ class listener(StreamListener):
         print status
 
 twitterStream = Stream(auth, listener())
-twitterStream.filter(track=["banksy", "graffiti"])
+twitterStream.filter(track=["banksy", "graffiti", "art", "music"])
