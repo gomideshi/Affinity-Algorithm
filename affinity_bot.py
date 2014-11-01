@@ -3,11 +3,7 @@ from tweepy import Stream
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 import time, random
-
-OAUTH_TOKEN         = '###'
-OAUTH_SECRET        = '###'
-CONSUMER_KEY        = '###'
-CONSUMER_SECRET     = '###'
+from keys import *
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(OAUTH_TOKEN, OAUTH_SECRET)
@@ -21,19 +17,27 @@ class listener(StreamListener):
     def on_data(self, data):
         try:
             #CYCLE START - ACTION DICE#
-            ActionCalc = random.randint(1,99999)
+            ActionCalc = random.randint(1,1000)
+            ActionGate = random.randint(1,5)
             Action = 0
-            if ActionCalc <= 89999: #Pass 90%
+            
+            if ActionCalc <= 990 or ActionCalc == 1000: #Pass 99.9%
                 Action = 1
-            if ActionCalc >= 90000 and ActionCalc <= 94999: #5% follow
-                Action = 2
-            if ActionCalc >= 95000 and ActionCalc <= 98999: #4% favorite
-                Action = 3
-            if ActionCalc >= 99000 and ActionCalc <= 99999: #1% retweet
-                Action = 4
-
-            #PAUSE DICE#
-            P1 = random.randint(90,300)
+            if ActionCalc >= 991 and ActionCalc <= 994: # follow
+                if ActionGate == 1:
+                    Action = 2
+                else:
+                    Action = 0
+            if ActionCalc >= 995 and ActionCalc <= 998: #4% favorite
+                if ActionGate == 1:
+                    Action = 3
+                else:
+                    Action = 0
+            if ActionCalc == 999: #1% retweet
+                if ActionGate == 1:
+                    Action = 4
+                else:
+                    Action = 0
 
             #DATA SEGMENTATION#
             tweetID = data.split(',"id":')[1].split(',"id_str":"')[0]
@@ -43,40 +47,32 @@ class listener(StreamListener):
             #OUTPUT FROM API#
             print 'USER: ' + username
             print 'TWEET: ' + tweet
-            print 'TWEET ID: ' + tweetID
-            print 'ROLL: '+str(ActionCalc)+'/95 - OPERATION #'+str(Action)
 
             #PASS RETWEETS#
             if 'RT ' in tweet:
                 Action = 0
                 print 'RETWEET! ** AUTOMATIC MUULIGAN**'
-                time.sleep(2)
 
             #ACTION FORK#
             if Action == 1:
                 print 'ACTION: **MULLIGAN**'
-                time.sleep(2)
                 
             if Action == 2:
-                print 'ACTION: *FOLLOWING* IN ' + str(P1) + ' SECONDS.'
-                time.sleep(P1)
+                print 'ACTION: *FOLLOWING*!'
                 api.create_friendship(username)
+                time.sleep(4)
 
             if Action == 3:
-                print 'ACTION: *FAVORITING* IN ' + str(P1) + ' SECONDS.'
-                time.sleep(P1)
+                print 'ACTION: *FAVORITING*!'
                 api.create_favorite(tweetID)
+                time.sleep(4)
 
             if Action == 4 and 't.co' in tweet:
-                print 'ACTION: *RETWEETING* IN ' + str(P1) + ' SECONDS.'
-                time.sleep(P1)
+                print 'ACTION: *RETWEETING*!'
                 api.retweet(tweetID)
-                
+                time.sleep(4)
 
-            #ACTION COMPLETE - CYCLE END#
-            print '------------------------------------------'
-            print '[COMPLETE] NEXT CYCLE BEGINS IN 3 SECONDS.' + '\n'
-            time.sleep(3)
+            print ''
 
             return True
         except BaseException, e:
